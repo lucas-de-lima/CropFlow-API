@@ -1,0 +1,231 @@
+# 🌾 CropFlow API
+
+**CropFlow** is a modern agricultural management API built with Go, featuring Clean Architecture and Domain-Driven Design principles.
+
+## 🚀 Overview
+
+CropFlow provides a comprehensive solution for managing agricultural operations including farms, crops, and fertilizers with role-based access control and modern security practices.
+
+### ✨ Key Features
+
+- 🏗️ **Clean Architecture** with clear separation of concerns
+- 🎯 **Domain-Driven Design (DDD)** implementation
+- 🔐 **JWT Authentication** with role-based access control
+- 🌐 **RESTful API** with comprehensive endpoints
+- 🐳 **Docker** containerization for easy deployment
+- 📊 **MySQL** database with GORM ORM
+- 🧪 **Comprehensive testing** with real user simulation
+
+### 🏛️ Architecture
+
+```
+cropflow-api/
+├── cmd/api/                    # Application entry point
+├── config/                     # Configuration management
+├── internal/
+│   ├── adapters/
+│   │   ├── database/mysql/     # MySQL repositories
+│   │   └── http/
+│   │       ├── handlers/       # HTTP controllers
+│   │       ├── dto/           # Data Transfer Objects
+│   │       └── routes/        # Route configuration
+│   ├── domain/
+│   │   ├── entities/          # Domain entities
+│   │   ├── repositories/      # Repository interfaces
+│   │   ├── farm/             # Farm domain
+│   │   ├── crop/             # Crop domain
+│   │   ├── fertilizer/       # Fertilizer domain
+│   │   └── person/           # Person/User domain
+│   ├── infrastructure/
+│   │   └── security/         # Security services (JWT, Password)
+│   └── usecases/             # Business logic layer
+├── docker-compose.yml
+├── Dockerfile
+└── scripts/                   # Demo and simulation scripts
+```
+
+## 🔐 Access Control
+
+| Role | Farms | Crops | Fertilizers |
+|------|-------|-------|-------------|
+| **USER** | ✅ List/View | ❌ List All | ❌ List |
+| **MANAGER** | ✅ List/View | ✅ List All | ❌ List |
+| **ADMIN** | ✅ List/View | ✅ List All | ✅ List |
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose
+- Go 1.21+ (for local development)
+
+### Running with Docker
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd cropflow-api
+
+# Start the services
+docker compose up -d
+
+# Check if services are running
+docker ps
+
+# The API will be available at http://localhost:8080
+```
+
+### Running Locally
+
+```bash
+# Install dependencies
+go mod download
+
+# Set environment variables
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_USER=root
+export DB_PASSWORD=password
+export DB_NAME=cropflow
+export JWT_SECRET=your-secret-key
+export JWT_ISSUER=cropflow
+export PORT=8080
+
+# Start MySQL (using Docker)
+docker run -d --name cropflow-mysql \
+  -e MYSQL_ROOT_PASSWORD=password \
+  -e MYSQL_DATABASE=cropflow \
+  -p 3306:3306 \
+  mysql:8.0
+
+# Run the application
+go run ./cmd/api
+```
+
+## 📚 API Endpoints
+
+### Authentication
+- `POST /persons` - Create user
+- `POST /auth/login` - Login
+
+### Farms
+- `POST /farms` - Create farm
+- `GET /farms` - List farms (requires auth)
+- `GET /farms/:id` - Get farm details
+- `POST /farms/:id/crops` - Create crop in farm
+- `GET /farms/:id/crops` - List farm crops
+
+### Crops
+- `GET /crops` - List all crops (MANAGER/ADMIN)
+- `GET /crops/:id` - Get crop details
+
+### Fertilizers
+- `POST /fertilizers` - Create fertilizer
+- `GET /fertilizers` - List all fertilizers (ADMIN only)
+- `GET /fertilizers/:id` - Get fertilizer details
+
+### Associations
+- `POST /crop/:cropId/fertilizer/:fertilizerId` - Associate fertilizer with crop
+- `GET /crop/:cropId/fertilizers` - List crop fertilizers
+
+## 🧪 Testing
+
+### Run the Complete Demo
+
+```bash
+# Execute the comprehensive demo
+./demo_complete.sh
+
+# Or run the simple simulation
+./simulate_user_fixed.sh
+```
+
+### Manual Testing Examples
+
+```bash
+# Create a user
+curl -X POST http://localhost:8080/persons \
+  -H "Content-Type: application/json" \
+  -d '{"username": "farmer", "password": "pass123", "role": "ROLE_USER"}'
+
+# Login
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "farmer", "password": "pass123"}'
+
+# Create a farm
+curl -X POST http://localhost:8080/farms \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Green Valley Farm", "size": 100.5}'
+
+# List farms (with authentication)
+curl -X GET http://localhost:8080/farms \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## 🛠️ Technology Stack
+
+- **Language**: Go 1.21
+- **Framework**: Gin (HTTP router)
+- **Database**: MySQL 8.0
+- **ORM**: GORM
+- **Authentication**: JWT
+- **Containerization**: Docker & Docker Compose
+- **Architecture**: Clean Architecture + DDD
+
+## 🏗️ Development
+
+### Project Structure
+
+The project follows Clean Architecture principles:
+
+- **Domain Layer**: Contains business entities and rules
+- **Use Cases Layer**: Contains application business logic
+- **Interface Adapters Layer**: Contains controllers, presenters, and gateways
+- **Infrastructure Layer**: Contains external concerns like databases, web frameworks
+
+### Adding New Features
+
+1. Define domain entities in `internal/domain/`
+2. Create use cases in `internal/usecases/`
+3. Implement repositories in `internal/adapters/database/`
+4. Add HTTP handlers in `internal/adapters/http/handlers/`
+5. Configure routes in `internal/adapters/http/routes/`
+
+## 📊 Monitoring
+
+### Health Check
+
+```bash
+# Check API health
+curl http://localhost:8080/farms
+
+# Check database connection
+docker exec cropflow-mysql mysql -u root -ppassword -e "SHOW DATABASES;"
+```
+
+### Logs
+
+```bash
+# View API logs
+docker logs cropflow-api
+
+# View database logs
+docker logs cropflow-mysql
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes following the architecture patterns
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+**CropFlow** - Modern Agricultural Management API 🌾✨
