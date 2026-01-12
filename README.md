@@ -1,231 +1,313 @@
-# 🌾 CropFlow API
+# CropFlow API
 
-**CropFlow** is a modern agricultural management API built with Go, featuring Clean Architecture and Domain-Driven Design principles.
+API REST para gestão de operações agrícolas desenvolvida em Go, implementando Clean Architecture e Domain-Driven Design.
 
-## 🚀 Overview
+## Visão Geral
 
-CropFlow provides a comprehensive solution for managing agricultural operations including farms, crops, and fertilizers with role-based access control and modern security practices.
+CropFlow é uma API que permite o gerenciamento de propriedades rurais, culturas agrícolas e fertilizantes, com controle de acesso baseado em roles. A aplicação foi construída seguindo princípios de arquitetura limpa, garantindo separação de responsabilidades e testabilidade.
 
-### ✨ Key Features
+## Tecnologias
 
-- 🏗️ **Clean Architecture** with clear separation of concerns
-- 🎯 **Domain-Driven Design (DDD)** implementation
-- 🔐 **JWT Authentication** with role-based access control
-- 🌐 **RESTful API** with comprehensive endpoints
-- 🐳 **Docker** containerization for easy deployment
-- 📊 **MySQL** database with GORM ORM
-- 🧪 **Comprehensive testing** with real user simulation
+- **Linguagem**: Go 1.21
+- **Framework HTTP**: Gin
+- **Banco de Dados**: MySQL 8.0
+- **ORM**: GORM
+- **Autenticação**: JWT
+- **Containerização**: Docker e Docker Compose
 
-### 🏛️ Architecture
+## Arquitetura
+
+O projeto segue os princípios de Clean Architecture, organizando o código em camadas:
+
+- **Domain**: Entidades de negócio e regras de domínio
+- **Use Cases**: Lógica de aplicação e orquestração
+- **Adapters**: Implementações de interfaces (HTTP handlers, repositórios MySQL)
+- **Infrastructure**: Serviços de infraestrutura (JWT, criptografia de senhas)
+
+<details>
+<summary>Estrutura do Projeto</summary>
 
 ```
 cropflow-api/
-├── cmd/api/                    # Application entry point
-├── config/                     # Configuration management
+├── cmd/api/                    # Ponto de entrada da aplicação
+├── config/                     # Gerenciamento de configuração
 ├── internal/
 │   ├── adapters/
-│   │   ├── database/mysql/     # MySQL repositories
+│   │   ├── database/mysql/     # Implementações de repositórios MySQL
 │   │   └── http/
-│   │       ├── handlers/       # HTTP controllers
+│   │       ├── handlers/       # Controllers HTTP
 │   │       ├── dto/           # Data Transfer Objects
-│   │       └── routes/        # Route configuration
+│   │       └── routes/        # Configuração de rotas
 │   ├── domain/
-│   │   ├── entities/          # Domain entities
-│   │   ├── repositories/      # Repository interfaces
-│   │   ├── farm/             # Farm domain
-│   │   ├── crop/             # Crop domain
-│   │   ├── fertilizer/       # Fertilizer domain
-│   │   └── person/           # Person/User domain
+│   │   ├── entities/          # Entidades de domínio
+│   │   ├── repositories/      # Interfaces de repositórios
+│   │   ├── farm/             # Domínio de fazendas
+│   │   ├── crop/             # Domínio de culturas
+│   │   ├── fertilizer/       # Domínio de fertilizantes
+│   │   └── person/           # Domínio de usuários
 │   ├── infrastructure/
-│   │   └── security/         # Security services (JWT, Password)
-│   └── usecases/             # Business logic layer
+│   │   └── security/         # Serviços de segurança (JWT, senhas)
+│   └── usecases/             # Casos de uso da aplicação
 ├── docker-compose.yml
 ├── Dockerfile
-└── scripts/                   # Demo and simulation scripts
+└── docs/                      # Documentação adicional
 ```
 
-## 🔐 Access Control
+</details>
 
-| Role | Farms | Crops | Fertilizers |
-|------|-------|-------|-------------|
-| **USER** | ✅ List/View | ❌ List All | ❌ List |
-| **MANAGER** | ✅ List/View | ✅ List All | ❌ List |
-| **ADMIN** | ✅ List/View | ✅ List All | ✅ List |
+## Pré-requisitos
 
-## 🚀 Quick Start
+- Docker e Docker Compose
+- Go 1.21+ (apenas para desenvolvimento local)
+- MySQL 8.0 (ou uso do Docker Compose)
 
-### Prerequisites
+## Instalação e Execução
 
-- Docker and Docker Compose
-- Go 1.21+ (for local development)
-
-### Running with Docker
+### Usando Docker Compose (Recomendado)
 
 ```bash
-# Clone the repository
+# Clone o repositório
 git clone <repository-url>
 cd cropflow-api
 
-# Start the services
+# Inicie os serviços
 docker compose up -d
 
-# Check if services are running
+# Verifique se os serviços estão rodando
 docker ps
 
-# The API will be available at http://localhost:8080
+# A API estará disponível em http://localhost:8080
 ```
 
-### Running Locally
+### Execução Local
 
 ```bash
-# Install dependencies
+# Instale as dependências
 go mod download
 
-# Set environment variables
-export DB_HOST=localhost
-export DB_PORT=3306
-export DB_USER=root
-export DB_PASSWORD=password
-export DB_NAME=cropflow
-export JWT_SECRET=your-secret-key
-export JWT_ISSUER=cropflow
-export PORT=8080
+# Configure as variáveis de ambiente (veja seção abaixo)
 
-# Start MySQL (using Docker)
+# Inicie o MySQL com Docker
 docker run -d --name cropflow-mysql \
   -e MYSQL_ROOT_PASSWORD=password \
   -e MYSQL_DATABASE=cropflow \
   -p 3306:3306 \
   mysql:8.0
 
-# Run the application
+# Execute a aplicação
 go run ./cmd/api
 ```
 
-## 📚 API Endpoints
+<details>
+<summary>Variáveis de Ambiente</summary>
 
-### Authentication
-- `POST /persons` - Create user
-- `POST /auth/login` - Login
+| Variável | Descrição | Valor Padrão |
+|----------|-----------|--------------|
+| `DB_HOST` | Host do banco de dados | `localhost` |
+| `DB_PORT` | Porta do banco de dados | `3306` |
+| `DB_USER` | Usuário do banco de dados | `root` |
+| `DB_PASSWORD` | Senha do banco de dados | (vazio) |
+| `DB_NAME` | Nome do banco de dados | `cropflow` |
+| `JWT_SECRET` | Chave secreta para JWT | `your-secret-key` |
+| `JWT_ISSUER` | Emissor do token JWT | `cropflow` |
+| `PORT` | Porta do servidor HTTP | `8080` |
 
-### Farms
-- `POST /farms` - Create farm
-- `GET /farms` - List farms (requires auth)
-- `GET /farms/:id` - Get farm details
-- `POST /farms/:id/crops` - Create crop in farm
-- `GET /farms/:id/crops` - List farm crops
+**Importante**: Altere `JWT_SECRET` em produção por uma chave segura.
 
-### Crops
-- `GET /crops` - List all crops (MANAGER/ADMIN)
-- `GET /crops/:id` - Get crop details
+</details>
 
-### Fertilizers
-- `POST /fertilizers` - Create fertilizer
-- `GET /fertilizers` - List all fertilizers (ADMIN only)
-- `GET /fertilizers/:id` - Get fertilizer details
+## Autenticação e Autorização
 
-### Associations
-- `POST /crop/:cropId/fertilizer/:fertilizerId` - Associate fertilizer with crop
-- `GET /crop/:cropId/fertilizers` - List crop fertilizers
+A API utiliza JWT (JSON Web Tokens) para autenticação. Após criar um usuário via `POST /persons`, é necessário realizar login via `POST /auth/login` para obter um token.
 
-## 🧪 Testing
-
-### Run the Complete Demo
-
-```bash
-# Execute the comprehensive demo
-./demo_complete.sh
-
-# Or run the simple simulation
-./simulate_user_fixed.sh
+O token deve ser enviado no header `Authorization` no formato:
+```
+Authorization: Bearer <token>
 ```
 
-### Manual Testing Examples
+### Roles e Permissões
+
+A aplicação possui três níveis de acesso:
+
+| Role | Descrição | Permissões |
+|------|-----------|------------|
+| `USER` | Usuário comum | Visualizar fazendas |
+| `MANAGER` | Gerente | Visualizar fazendas e listar todas as culturas |
+| `ADMIN` | Administrador | Acesso completo, incluindo gestão de fertilizantes |
+
+<details>
+<summary>Matriz de Permissões Detalhada</summary>
+
+| Endpoint | USER | MANAGER | ADMIN |
+|----------|------|---------|-------|
+| `POST /persons` | ✅ | ✅ | ✅ |
+| `POST /auth/login` | ✅ | ✅ | ✅ |
+| `POST /farms` | ✅ | ✅ | ✅ |
+| `GET /farms` | ✅ | ✅ | ✅ |
+| `GET /farms/:id` | ✅ | ✅ | ✅ |
+| `POST /farms/:id/crops` | ✅ | ✅ | ✅ |
+| `GET /farms/:id/crops` | ✅ | ✅ | ✅ |
+| `GET /crops` | ❌ | ✅ | ✅ |
+| `GET /crops/:id` | ✅ | ✅ | ✅ |
+| `POST /fertilizers` | ✅ | ✅ | ✅ |
+| `GET /fertilizers` | ❌ | ❌ | ✅ |
+| `GET /fertilizers/:id` | ✅ | ✅ | ✅ |
+
+</details>
+
+## Endpoints da API
+
+### Autenticação
+
+- `POST /persons` - Criar novo usuário
+- `POST /auth/login` - Autenticar e obter token JWT
+
+### Fazendas
+
+- `POST /farms` - Criar fazenda
+- `GET /farms` - Listar fazendas (requer autenticação)
+- `GET /farms/:id` - Obter detalhes de uma fazenda
+
+### Culturas
+
+- `POST /farms/:id/crops` - Criar cultura em uma fazenda
+- `GET /farms/:id/crops` - Listar culturas de uma fazenda
+- `GET /crops` - Listar todas as culturas (requer role MANAGER ou ADMIN)
+- `GET /crops/:id` - Obter detalhes de uma cultura
+
+### Fertilizantes
+
+- `POST /fertilizers` - Criar fertilizante
+- `GET /fertilizers` - Listar todos os fertilizantes (requer role ADMIN)
+- `GET /fertilizers/:id` - Obter detalhes de um fertilizante
+
+### Associações
+
+- `POST /crop/:cropId/fertilizer/:fertilizerId` - Associar fertilizante a uma cultura
+- `GET /crop/:cropId/fertilizers` - Listar fertilizantes de uma cultura
+
+<details>
+<summary>Exemplos de Requisições</summary>
+
+#### Criar Usuário
 
 ```bash
-# Create a user
 curl -X POST http://localhost:8080/persons \
   -H "Content-Type: application/json" \
-  -d '{"username": "farmer", "password": "pass123", "role": "ROLE_USER"}'
-
-# Login
-curl -X POST http://localhost:8080/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "farmer", "password": "pass123"}'
-
-# Create a farm
-curl -X POST http://localhost:8080/farms \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Green Valley Farm", "size": 100.5}'
-
-# List farms (with authentication)
-curl -X GET http://localhost:8080/farms \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+  -d '{
+    "username": "usuario",
+    "password": "senha123",
+    "role": "USER"
+  }'
 ```
 
-## 🛠️ Technology Stack
-
-- **Language**: Go 1.21
-- **Framework**: Gin (HTTP router)
-- **Database**: MySQL 8.0
-- **ORM**: GORM
-- **Authentication**: JWT
-- **Containerization**: Docker & Docker Compose
-- **Architecture**: Clean Architecture + DDD
-
-## 🏗️ Development
-
-### Project Structure
-
-The project follows Clean Architecture principles:
-
-- **Domain Layer**: Contains business entities and rules
-- **Use Cases Layer**: Contains application business logic
-- **Interface Adapters Layer**: Contains controllers, presenters, and gateways
-- **Infrastructure Layer**: Contains external concerns like databases, web frameworks
-
-### Adding New Features
-
-1. Define domain entities in `internal/domain/`
-2. Create use cases in `internal/usecases/`
-3. Implement repositories in `internal/adapters/database/`
-4. Add HTTP handlers in `internal/adapters/http/handlers/`
-5. Configure routes in `internal/adapters/http/routes/`
-
-## 📊 Monitoring
-
-### Health Check
+#### Login
 
 ```bash
-# Check API health
-curl http://localhost:8080/farms
-
-# Check database connection
-docker exec cropflow-mysql mysql -u root -ppassword -e "SHOW DATABASES;"
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "usuario",
+    "password": "senha123"
+  }'
 ```
+
+#### Criar Fazenda
+
+```bash
+curl -X POST http://localhost:8080/farms \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Fazenda Exemplo",
+    "size": 100.5
+  }'
+```
+
+#### Listar Fazendas (com autenticação)
+
+```bash
+curl -X GET http://localhost:8080/farms \
+  -H "Authorization: Bearer <seu-token-jwt>"
+```
+
+</details>
+
+## Desenvolvimento
+
+### Executar Testes
+
+```bash
+go test ./... -v
+```
+
+### Build
+
+```bash
+go build -o cropflow-api ./cmd/api
+```
+
+### Dependências
+
+O gerenciamento de dependências é feito via Go Modules. Para atualizar dependências:
+
+```bash
+go mod tidy
+go mod download
+```
+
+<details>
+<summary>Adicionando Novas Funcionalidades</summary>
+
+Seguindo a arquitetura do projeto:
+
+1. **Defina as entidades de domínio** em `internal/domain/`
+2. **Crie as interfaces de repositório** em `internal/domain/repositories/`
+3. **Implemente a lógica de domínio** nas pastas específicas do domínio
+4. **Implemente os repositórios** em `internal/adapters/database/mysql/`
+5. **Crie os casos de uso** em `internal/usecases/`
+6. **Implemente os handlers HTTP** em `internal/adapters/http/handlers/`
+7. **Defina os DTOs** em `internal/adapters/http/dto/`
+8. **Configure as rotas** em `internal/adapters/http/routes/routes.go`
+
+</details>
+
+## Monitoramento
 
 ### Logs
 
+Com Docker Compose:
+
 ```bash
-# View API logs
+# Logs da API
 docker logs cropflow-api
 
-# View database logs
+# Logs do banco de dados
 docker logs cropflow-mysql
+
+# Logs de ambos
+docker compose logs -f
 ```
 
-## 🤝 Contributing
+### Health Check
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes following the architecture patterns
-4. Add tests for new functionality
-5. Submit a pull request
+Para verificar se a API está respondendo:
 
-## 📄 License
+```bash
+curl http://localhost:8080/farms
+```
 
-This project is licensed under the MIT License.
+## Contribuindo
+
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Faça commit das suas mudanças (`git commit -am 'Adiciona nova feature'`)
+4. Faça push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a MIT License.
 
 ---
 
-**CropFlow** - Modern Agricultural Management API 🌾✨
+**CropFlow API** - Sistema de Gestão Agrícola
