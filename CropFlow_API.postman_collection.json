@@ -1,0 +1,703 @@
+{
+	"info": {
+		"_postman_id": "cropflow-api-test-suite",
+		"name": "CropFlow API - Test Suite",
+		"description": "Collection completa para validação dos principais fluxos da API CropFlow.\n\nEsta collection testa:\n- Criação e autenticação de usuários (USER, MANAGER, ADMIN)\n- Gestão de fazendas\n- Gestão de plantações\n- Gestão de fertilizantes\n- Controle de acesso baseado em roles\n- Associações entre entidades",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Create User - USER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"user_id\", jsonData.id);",
+									"    console.log(\"USER ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"demo_user\",\n    \"password\": \"demo123\",\n    \"role\": \"ROLE_USER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/persons",
+							"host": ["{{base_url}}"],
+							"path": ["persons"]
+						}
+					}
+				},
+				{
+					"name": "Create User - MANAGER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"manager_id\", jsonData.id);",
+									"    console.log(\"MANAGER ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"demo_manager\",\n    \"password\": \"demo123\",\n    \"role\": \"ROLE_MANAGER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/persons",
+							"host": ["{{base_url}}"],
+							"path": ["persons"]
+						}
+					}
+				},
+				{
+					"name": "Create User - ADMIN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"admin_id\", jsonData.id);",
+									"    console.log(\"ADMIN ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"demo_admin\",\n    \"password\": \"demo123\",\n    \"role\": \"ROLE_ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/persons",
+							"host": ["{{base_url}}"],
+							"path": ["persons"]
+						}
+					}
+				},
+				{
+					"name": "Login - USER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"user_token\", jsonData.token);",
+									"    console.log(\"USER token saved\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"demo_user\",\n    \"password\": \"demo123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login - MANAGER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"manager_token\", jsonData.token);",
+									"    console.log(\"MANAGER token saved\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"demo_manager\",\n    \"password\": \"demo123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login - ADMIN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"admin_token\", jsonData.token);",
+									"    console.log(\"ADMIN token saved\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"demo_admin\",\n    \"password\": \"demo123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Farms",
+			"item": [
+				{
+					"name": "Create Farm (as ADMIN)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"farm_id\", jsonData.id);",
+									"    console.log(\"Farm ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Green Valley Farm\",\n    \"size\": 150.5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/farms",
+							"host": ["{{base_url}}"],
+							"path": ["farms"]
+						}
+					}
+				},
+				{
+					"name": "List Farms (as USER)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/farms",
+							"host": ["{{base_url}}"],
+							"path": ["farms"]
+						}
+					}
+				},
+				{
+					"name": "Get Farm by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/farms/{{farm_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["farms", "{{farm_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Crops",
+			"item": [
+				{
+					"name": "Create Crop (as ADMIN)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate dates for crop",
+									"const today = new Date().toISOString();",
+									"const harvestDate = new Date();",
+									"harvestDate.setDate(harvestDate.getDate() + 90);",
+									"pm.environment.set(\"planted_date\", today);",
+									"pm.environment.set(\"harvest_date\", harvestDate.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"crop_id\", jsonData.id);",
+									"    console.log(\"Crop ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Corn\",\n    \"plantedArea\": 25.0,\n    \"plantedDate\": \"{{planted_date}}\",\n    \"harvestDate\": \"{{harvest_date}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/farms/{{farm_id}}/crops",
+							"host": ["{{base_url}}"],
+							"path": ["farms", "{{farm_id}}", "crops"]
+						}
+					}
+				},
+				{
+					"name": "List Crops by Farm (as USER)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/farms/{{farm_id}}/crops",
+							"host": ["{{base_url}}"],
+							"path": ["farms", "{{farm_id}}", "crops"]
+						}
+					}
+				},
+				{
+					"name": "List All Crops (as MANAGER) - Should Succeed",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{manager_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/crops",
+							"host": ["{{base_url}}"],
+							"path": ["crops"]
+						}
+					}
+				},
+				{
+					"name": "List All Crops (as USER) - Should Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return error (403 or 401)\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/crops",
+							"host": ["{{base_url}}"],
+							"path": ["crops"]
+						}
+					}
+				},
+				{
+					"name": "Get Crop by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/crops/{{crop_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["crops", "{{crop_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Fertilizers",
+			"item": [
+				{
+					"name": "Create Fertilizer (as ADMIN)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"fertilizer_id\", jsonData.id);",
+									"    console.log(\"Fertilizer ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"NPK 10-10-10\",\n    \"brand\": \"AgroMax\",\n    \"composition\": \"Nitrogen 10%, Phosphorus 10%, Potassium 10%\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/fertilizers",
+							"host": ["{{base_url}}"],
+							"path": ["fertilizers"]
+						}
+					}
+				},
+				{
+					"name": "List Fertilizers (as ADMIN) - Should Succeed",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/fertilizers",
+							"host": ["{{base_url}}"],
+							"path": ["fertilizers"]
+						}
+					}
+				},
+				{
+					"name": "List Fertilizers (as USER) - Should Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return error (403 or 401)\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/fertilizers",
+							"host": ["{{base_url}}"],
+							"path": ["fertilizers"]
+						}
+					}
+				},
+				{
+					"name": "List Fertilizers (as MANAGER) - Should Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return error (403 or 401)\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{manager_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/fertilizers",
+							"host": ["{{base_url}}"],
+							"path": ["fertilizers"]
+						}
+					}
+				},
+				{
+					"name": "Get Fertilizer by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/fertilizers/{{fertilizer_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["fertilizers", "{{fertilizer_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Associations",
+			"item": [
+				{
+					"name": "Associate Fertilizer with Crop (as ADMIN)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/crop/{{crop_id}}/fertilizer/{{fertilizer_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["crop", "{{crop_id}}", "fertilizer", "{{fertilizer_id}}"]
+						}
+					}
+				},
+				{
+					"name": "List Fertilizers by Crop (as ADMIN)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/crop/{{crop_id}}/fertilizers",
+							"host": ["{{base_url}}"],
+							"path": ["crop", "{{crop_id}}", "fertilizers"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
